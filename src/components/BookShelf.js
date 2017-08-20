@@ -1,29 +1,50 @@
 import React from 'react'
-import * as BooksAPI from '../BooksAPI'
-import '../App.css'
 import Book from './Book'
-import BookSearch from './BookSearch'
-import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom'
 
 class BookShelf extends React.Component {
 
-var books = [
-{id: 1, url: "http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api", title: "To Kill a Mockingbird", author: "Harper Lee" },
-{id: 2, url: "http://books.google.com/books/content?id=yDtCuFHXbAYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE72RRiTR6U5OUg3IY_LpHTL2NztVWAuZYNFE8dUuC0VlYabeyegLzpAnDPeWxE6RHi0C2ehrR9Gv20LH2dtjpbcUcs8YnH5VCCAH0Y2ICaKOTvrZTCObQbsfp4UbDqQyGISCZfGN&source=gbs_api", title: "Ender's Game", author: "rson Scott Card"}
-]
-  render() {
-    return (
-      <div className="bookshelf-list">
-          <div className="bookshelf">
-              <h2 className="bookshelf-title">{this.props.section}</h2>
-              <Book books={this.props.books}/>
-          </div>
+  static propTypes = {
+    section: PropTypes.string.isRequired,
+    shelfType: PropTypes.string.isRequired,
+    books: PropTypes.array,
+    onBookShelfChange: PropTypes.func.isRequired
+  }
 
-          <div className="open-search">
-              <Link to="/search">Add a book</Link>
-          </div>
+  onBookShelfChange = (bookId, shelfType) => {
+      this.props.onBookShelfChange(bookId, shelfType);
+   }
+
+  render() {
+    const books = this.props.books.filter((book) => {
+     return book.shelf === this.props.shelfType
+    });
+
+    return (
+      <div className="bookshelf">
+         <h2 className="bookshelf-title">{this.props.section}</h2>
+            <div className="bookshelf-books">
+              <ol className="books-grid">
+                  {books.map((book) => {
+                      return (
+                          <li key={book.id}>
+                            <Book id={book.id} title={book.title}
+                                  author={book.authors[0]}
+                                  url={book.imageLinks.smallThumbnail}
+                                  shelfType={this.props.shelfType}
+                                  onBookShelfChange={this.onBookShelfChange}/>
+                          </li>
+                        );
+                   })
+                  }
+              </ol>
+        </div>
+        <div className="open-search">
+          <Link to="/search">Add a book</Link>
+        </div>
       </div>
+
     )
   }
 }
